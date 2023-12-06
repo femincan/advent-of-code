@@ -6,6 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const example = false;
 const filePath = join(__dirname, example ? 'example.txt' : 'data.txt');
 const data = readFileSync(filePath).toString().trim().split('\n');
+
 const numbersMap = {
   one: '1',
   two: '2',
@@ -21,15 +22,19 @@ const numbersMap = {
 const result = data.reduce((result, currentLine) => {
   const regex = new RegExp(`\\d|${Object.keys(numbersMap).join('|')}`, 'g');
 
-  const numbers: string[] = [];
-  let execArray: RegExpExecArray | null;
+  const numbers = [];
+
+  /** @type {*} */
+  let execArray;
+
   while ((execArray = regex.exec(currentLine)) !== null) {
+    /** @type {keyof typeof numbersMap} */
     const match = execArray[0];
 
     if (!isNaN(Number(match))) {
       numbers.push(match);
     } else {
-      const number = numbersMap[match as keyof typeof numbersMap];
+      const number = numbersMap[match];
       numbers.push(number);
 
       regex.lastIndex = regex.lastIndex - 1;
