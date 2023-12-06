@@ -24,11 +24,9 @@ const result = data.reduce((result, currentLine) => {
 
   const numbers = [];
 
-  /** @type {*} */
   let execArray;
 
   while ((execArray = regex.exec(currentLine)) !== null) {
-    /** @type {keyof typeof numbersMap} */
     const match = execArray[0];
 
     if (!isNaN(Number(match))) {
