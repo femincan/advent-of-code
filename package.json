@@ -4,13 +4,6 @@
   "version": "0.0.1",
   "type": "module",
   "description": "❄️ My solutions for Advent of Code 2023",
-  "scripts": {
-    "start": "node --loader ts-node/esm"
-  },
   "author": "Furkan Emin Can",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^20.10.3",
-    "typescript": "^5.3.2"
-  }
+  "license": "MIT"
 }
