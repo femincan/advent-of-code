@@ -7,51 +7,73 @@ const example = false;
 const filePath = join(__dirname, example ? 'example.txt' : 'data.txt');
 const data = readFileSync(filePath).toString().trim().split('\n');
 
-const sum = data.reduce((sum, line, index) => {
-  let currentLineSum = sum;
-  const symbolRegex = /[^\w.]/;
-
+const asterisksData = data.reduce((asterisksData, line, lineIndex) => {
   const numbersMatch = line.matchAll(/\d+/g);
 
   for (const numberMatch of numbersMatch) {
-    let symbolAround = false;
+    const asteriskLocs = [];
 
     const lookStartIndex = numberMatch.index - 1;
     const lookEndIndex = numberMatch.index + numberMatch[0].length;
 
     const previousCharacter = line[lookStartIndex];
     const nextCharacter = line[lookEndIndex];
-    const previousLine = data[index - 1];
-    const nextLine = data[index + 1];
+    const previousLine = data[lineIndex - 1];
+    const nextLine = data[lineIndex + 1];
 
-    if (previousCharacter) {
-      symbolAround = symbolRegex.test(previousCharacter);
+    if (previousCharacter && previousCharacter === '*') {
+      asteriskLocs.push(`${lookStartIndex}_${lineIndex}`);
     }
 
-    if (nextCharacter && !symbolAround) {
-      symbolAround = symbolRegex.test(nextCharacter);
+    if (nextCharacter && nextCharacter === '*') {
+      asteriskLocs.push(`${lookEndIndex}_${lineIndex}`);
     }
 
-    if (previousLine && !symbolAround) {
-      symbolAround = previousLine
-        .substring(lookStartIndex, lookEndIndex + 1)
-        .split('')
-        .some((character) => symbolRegex.test(character));
+    if (previousLine) {
+      const asterisksMatch = previousLine.matchAll(/\*/g);
+
+      for (const asteriskMatch of asterisksMatch) {
+        if (
+          asteriskMatch.index <= lookEndIndex &&
+          asteriskMatch.index >= lookStartIndex
+        ) {
+          asteriskLocs.push(`${asteriskMatch.index}_${lineIndex - 1}`);
+        }
+      }
     }
 
-    if (nextLine && !symbolAround) {
-      symbolAround = nextLine
-        .substring(lookStartIndex, lookEndIndex + 1)
-        .split('')
-        .some((character) => symbolRegex.test(character));
+    if (nextLine) {
+      const asterisksMatch = nextLine.matchAll(/\*/g);
+
+      for (const asteriskMatch of asterisksMatch) {
+        if (
+          asteriskMatch.index <= lookEndIndex &&
+          asteriskMatch.index >= lookStartIndex
+        ) {
+          asteriskLocs.push(`${asteriskMatch.index}_${lineIndex + 1}`);
+        }
+      }
     }
 
-    if (symbolAround) {
-      currentLineSum += Number(numberMatch[0]);
+    if (asteriskLocs.length > 0) {
+      asteriskLocs.forEach((asteriskLoc) => {
+        if (asterisksData.hasOwnProperty(asteriskLoc)) {
+          asterisksData[asteriskLoc].push(Number(numberMatch[0]));
+        } else {
+          asterisksData[asteriskLoc] = [];
+          asterisksData[asteriskLoc].push(Number(numberMatch[0]));
+        }
+      });
     }
   }
 
-  return currentLineSum;
-}, 0);
+  return asterisksData;
+}, {});
+
+const sum = Object.values(asterisksData).reduce(
+  (sum, arr) =>
+    arr.length > 1 ? sum + arr.reduce((pre, crr) => pre * crr) : sum,
+  0
+);
 
 console.log(sum);
