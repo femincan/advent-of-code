@@ -19,14 +19,24 @@ const getMatchedNumbersCount = (cardLine) => {
   ).length;
 };
 
-const sumOfPoints = data.reduce((sumOfPoints, line) => {
-  const matchedNumbersCount = getMatchedNumbersCount(line);
+const matchCounts = data.map((line) => getMatchedNumbersCount(line));
 
-  if (matchedNumbersCount > 0) {
-    return sumOfPoints + 2 ** (matchedNumbersCount - 1);
+const getCopiesCount = (index) => {
+  const matchCount = matchCounts[index];
+  let totalCopiesCount = matchCount;
+
+  if (matchCount > 0) {
+    for (let i = 1; i <= matchCount; i++) {
+      totalCopiesCount += getCopiesCount(index + i);
+    }
   }
 
-  return sumOfPoints;
-}, 0);
+  return totalCopiesCount;
+};
 
-console.log(sumOfPoints);
+const totalCardsCount = matchCounts.reduce(
+  (cardsCount, _, index) => cardsCount + getCopiesCount(index),
+  matchCounts.length
+);
+
+console.log(totalCardsCount);
