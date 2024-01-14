@@ -1,3 +1,5 @@
+console.time('Execution Time');
+
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,62 +15,72 @@ const instructions = data.map((line) => {
 });
 
 const vertices = [[0, 0]];
-instructions.forEach(([direction, amount]) => {
+for (const [direction, amount] of instructions) {
+  const lastVertice = vertices.at(-1);
+
   switch (direction) {
     case 'R':
-      vertices.push(
-        ...Array.from(Array(amount), (_, i) => [
-          vertices.at(-1)[0] + (i + 1),
-          vertices.at(-1)[1],
-        ])
-      );
+      vertices.push([lastVertice[0] + amount, lastVertice[1]]);
+
       break;
     case 'L':
-      vertices.push(
-        ...Array.from(Array(amount), (_, i) => [
-          vertices.at(-1)[0] - (i + 1),
-          vertices.at(-1)[1],
-        ])
-      );
+      vertices.push([lastVertice[0] - amount, lastVertice[1]]);
+
       break;
     case 'U':
-      vertices.push(
-        ...Array.from(Array(amount), (_, i) => [
-          vertices.at(-1)[0],
-          vertices.at(-1)[1] + (i + 1),
-        ])
-      );
+      vertices.push([lastVertice[0], lastVertice[1] + amount]);
+
       break;
     case 'D':
-      vertices.push(
-        ...Array.from(Array(amount), (_, i) => [
-          vertices.at(-1)[0],
-          vertices.at(-1)[1] - (i + 1),
-        ])
-      );
+      vertices.push([lastVertice[0], lastVertice[1] - amount]);
       break;
   }
-});
+}
 
 vertices.pop();
 
 const pointsCount =
-  getPolygonArea(vertices) - vertices.length / 2 + 1 + vertices.length;
+  getPolygonArea(vertices) + getVerticesCount(vertices) / 2 + 1;
+
 console.log(pointsCount);
+
+function getVerticesCount(vertices) {
+  let count = 0;
+
+  for (let i = 0; i < vertices.length; i++) {
+    const vertice1 = vertices[i];
+    const vertice2 = i === vertices.length - 1 ? vertices[0] : vertices[i + 1];
+
+    const xRange = Math.abs(vertice1[0] - vertice2[0]);
+
+    if (xRange > 0) {
+      count += xRange;
+      continue;
+    }
+
+    const yRange = Math.abs(vertice1[1] - vertice2[1]);
+
+    if (yRange > 0) {
+      count += yRange;
+    }
+  }
+
+  return count;
+}
 
 function getPolygonArea(vertices) {
   let sum1 = 0,
     sum2 = 0;
 
-  vertices.reduce((vertice1, vertice2) => {
+  for (let i = 0; i < vertices.length; i++) {
+    const vertice1 = vertices[i];
+    const vertice2 = i === vertices.length - 1 ? vertices[0] : vertices[i + 1];
+
     sum1 += vertice1[0] * vertice2[1];
     sum2 += vertice1[1] * vertice2[0];
-
-    return vertice2;
-  });
-
-  sum1 += vertices.at(-1)[0] * vertices[0][1];
-  sum2 += vertices.at(-1)[1] * vertices[0][0];
+  }
 
   return Math.abs(sum1 - sum2) / 2;
 }
+
+console.timeEnd('Execution Time');
