@@ -21,15 +21,12 @@ for (const [direction, amount] of instructions) {
   switch (direction) {
     case 'R':
       vertices.push([lastVertice[0] + amount, lastVertice[1]]);
-
       break;
     case 'L':
       vertices.push([lastVertice[0] - amount, lastVertice[1]]);
-
       break;
     case 'U':
       vertices.push([lastVertice[0], lastVertice[1] + amount]);
-
       break;
     case 'D':
       vertices.push([lastVertice[0], lastVertice[1] - amount]);
