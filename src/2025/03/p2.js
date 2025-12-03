@@ -1,34 +1,28 @@
 import { getData, measureExecutionTime } from '../../lib/utils';
 
-const data = await getData(import.meta.dir, false);
+const data = await getData(import.meta.dir, true);
 
 const lines = data.split('\n');
 
 function main() {
   let totalJoltage = 0;
 
-  for (const bank of lines) {
-    const batterySelections = Array.from({ length: 12 }, () => null);
+  for (let bank of lines) {
+    const batterySelections = Array.from({ length: 12 }, () => undefined);
 
-    for (let i = 0; i < bank.length; i++) {
-      let selected = false;
-      for (let j = 0; j < batterySelections.length; j++) {
-        if (selected) {
-          batterySelections[j] = null;
-          continue;
-        }
+    for (let i = batterySelections.length - 1; i >= 0; i--) {
+      const availableBatteries = bank.slice(0, bank.length - i);
 
-        if (
-          bank[i] > batterySelections[j] &&
-          batterySelections.length - j <= bank.length - i
-        ) {
-          batterySelections[j] = bank[i];
-          selected = true;
-        }
-      }
+      const maxBattery = Math.max(...availableBatteries);
+      batterySelections[i] = maxBattery;
+
+      bank = bank.slice(bank.indexOf(maxBattery) + 1);
     }
 
-    totalJoltage += Number(batterySelections.join(''));
+    totalJoltage += batterySelections.reduce(
+      (num, batteryVal, i) => num + batteryVal * 10 ** i,
+      0
+    );
   }
 
   return totalJoltage;
