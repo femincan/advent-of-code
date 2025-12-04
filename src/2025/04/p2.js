@@ -11,10 +11,10 @@ const directions = [
 
 function main() {
   let total = 0;
-  let toBeDeleted = [];
+  let deletedCount = 0;
 
   do {
-    toBeDeleted = [];
+    deletedCount = 0;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -29,15 +29,12 @@ function main() {
 
         if (adjacentCount < 4) {
           total += 1;
-          toBeDeleted.push([i, j]);
+          deletedCount += 1;
+          lines[i][j] = '.';
         }
       }
     }
-
-    for (const [row, col] of toBeDeleted) {
-      lines[row][col] = '.';
-    }
-  } while (toBeDeleted.length);
+  } while (deletedCount);
 
   return total;
 }
