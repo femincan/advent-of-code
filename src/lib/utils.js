@@ -3,7 +3,7 @@ import { join } from 'node:path';
 export async function getData(callerDir, isExample) {
   const filename = isExample ? 'example' : 'data';
   const filePath = join(callerDir, `${filename}.txt`);
-  return (await Bun.file(filePath).text()).trim();
+  return await Bun.file(filePath).text();
 }
 
 export function measureExecutionTime(callback) {
