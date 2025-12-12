@@ -1,6 +1,6 @@
 import { getData, measureExecutionTime } from '../../lib/utils';
 
-const data = await getData(import.meta.dir, true);
+const data = await getData(import.meta.dir, false);
 
 const lines = data.split('\n');
 
