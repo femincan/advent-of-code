@@ -9,26 +9,27 @@ const graph = new Map(
     return [node, destNodesStr.trim().split(' ')];
   })
 );
+const cache = new Map();
 
 function main() {
-  let totalPaths = 0;
-  const stack = graph.get('you');
-
-  while (stack.length) {
-    const node = stack.pop();
-    const destNodes = graph.get(node);
-
-    for (const destNode of destNodes) {
-      if (destNode === 'out') {
-        totalPaths += 1;
-        continue;
-      }
-
-      stack.push(destNode);
-    }
-  }
-
-  return totalPaths;
+  return dfs('you');
 }
 
 console.log(measureExecutionTime(main));
+
+function dfs(node) {
+  if (cache.has(node)) return cache.get(node);
+
+  if (node === 'out') return 1;
+
+  if (!graph.has(node)) return 0;
+
+  let total = 0;
+  for (const destNode of graph.get(node)) {
+    total += dfs(destNode);
+  }
+
+  cache.set(node, total);
+
+  return total;
+}
