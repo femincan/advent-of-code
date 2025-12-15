@@ -10,6 +10,9 @@ function main() {
     const [x1, y1] = coordinates[i];
     for (let j = i + 1; j < coordinates.length; j++) {
       const [x2, y2] = coordinates[j];
+
+      if (x1 === x2 || y1 === y2) continue;
+
       const area = (Math.abs(x2 - x1) + 1) * (Math.abs(y2 - y1) + 1);
 
       if (area < largestArea) continue;
